@@ -1,0 +1,29 @@
+bundle:
+  name: databricks-bundle-demo
+# Le decimos al bundle que busque y cargue cualquier archivo .yml
+# que encuentre en la carpeta 'resources/'. Aquí definiremos nuestros jobs.
+
+
+include:
+  - resources/*.yml
+
+# Aquí definimos nuestros entornos de despliegue.
+targets:
+  # El entorno de desarrollo. Ideal para pruebas rápidas.
+  dev:
+    # El modo 'development' sube los archivos a una ruta temporal
+    # y los elimina después de un tiempo. No crea jobs permanentes.
+    mode: development
+    default: true
+    workspace:
+      # La CLI ya sabe tu host por la configuración, pero es bueno tenerlo aquí.
+      host: https://adb-1193445751689943.3.azuredatabricks.net
+
+  # El entorno de producción. Crea recursos permanentes.
+  # Lo usaremos más adelante.
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-1193445751689943.3.azuredatabricks.net
+      # Define la ruta base donde se desplegarán los artefactos en producción.
+      root_path: /Shared/prod-bundles/${bundle.name}
