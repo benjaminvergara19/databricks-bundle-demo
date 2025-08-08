@@ -1,0 +1,21 @@
+ # resources/mi_primer_job.yml
+        resources:
+          jobs:
+            mi_primer_job_bundle:
+              name: "Mi Primer Job Desplegado con un Bundle"
+              tasks:
+                - task_key: tarea_notebook
+                  notebook_task:
+                    # La ruta al notebook es relativa a la carpeta raíz del proyecto.
+                    notebook_path: src/databricksbundledemo/mi_primer_notebook_bundle.py
+                  
+                  # Usa el clúster definido a continuación.
+                  job_cluster_key: cluster_de_job
+
+              # Define el clúster que usará este job.
+              job_clusters:
+                - job_cluster_key: cluster_de_job
+                  new_cluster:
+                    spark_version: 14.3.x-scala2.12
+                    node_type_id: Standard_DS3_v2
+                    num_workers: 0 # 0 workers significa un clúster de "Nodo Único"
