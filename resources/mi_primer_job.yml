@@ -3,23 +3,15 @@ resources:
   jobs:
     mi_primer_job_bundle:
       name: "Mi Primer Job Desplegado con un Bundle"
+      #buscar si puedo parametrizar un id para el job
+      #id: 
       tasks:
         - task_key: tarea_notebook
-          notebook_task:
-            # SOLUCIÓN 1: Usamos una ruta relativa para "subir" un nivel desde
-            # la carpeta /resources y luego entrar a /src.
-            notebook_path: ../src/databricksbundledemo/mi_primer_notebook_bundle.py
           
-          job_cluster_key: cluster_de_job
+          # Le decimos al job que use un clúster que ya existe.
+          existing_cluster_id: "0604-154954-8pbp3p4r"
 
-      job_clusters:
-        - job_cluster_key: cluster_de_job
-          new_cluster:
-            spark_version: "14.3.x-scala2.12"
-            node_type_id: "Standard_DS3_v2"
-            # SOLUCIÓN 2: Añadimos la configuración de singleNode que faltaba.
-            spark_conf:
-              spark.databricks.cluster.profile: singleNode
-              spark.master: "local[*]"
-            custom_tags:
-              ResourceClass: "SingleNode"
+
+          notebook_task:
+            # La ruta al notebook es relativa.
+            notebook_path: ../src/databricksbundledemo/mi_primer_notebook_bundle.py
