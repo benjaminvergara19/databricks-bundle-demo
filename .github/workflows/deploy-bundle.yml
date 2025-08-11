@@ -1,10 +1,7 @@
 name: Deploy Databricks Bundle
 
 on:
-  # Permite ejecutarlo manualmente (útil para pruebas)
   workflow_dispatch:
-
-  # Se activa con un push a la rama main si se modifican los archivos clave
   push:
     branches:
       - main
@@ -14,45 +11,39 @@ on:
       - 'databricks.yml'
 
 jobs:
-  # Este es el nombre del job que verás en GitHub Actions
-  deploy:
+  # --- JOB 1: VALIDACIÓN PREVIA ---
+  validate:
     runs-on: ubuntu-latest
-
-    # --- CONTROL DE CAMBIOS: PARTE 1 ---
-    # Este job se ejecutará en el entorno 'produccion'.
-    # Si ese entorno tiene reglas de protección (como 'Required reviewers'),
-    # el job se pausará aquí hasta que sea aprobado.
-    environment: prod
-
+    # Queremos que la salida de este job esté disponible para otros.
+    outputs:
+      commit_message: ${{ steps.check_commit.outputs.commit_message }}
     steps:
-      # --- CONTROL DE CAMBIOS: PARTE 2 ---
-      # Este paso se ejecuta primero para validar el mensaje del commit.
       - name: Check for deploy keyword in commit message
+        id: check_commit # Le damos un ID al paso para poder referenciarlo
         uses: gsactions/commit-message-checker@v2
         with:
-          # Busca la etiqueta '[deploy]' en el mensaje del último commit.
-          # Las barras invertidas son para "escapar" los corchetes.
           pattern: '\[deploy\]'
-          # Mensaje de error si la etiqueta no se encuentra.
           error: "El mensaje del commit debe incluir '[deploy]' para poder desplegar."
-          # No busca en la descripción del commit (solo en el título).
           excludeDescription: 'true'
           excludeTitle: 'false'
-          # Solo revisa el último commit del push, no todos los del historial.
           checkAllCommitMessages: 'false'
 
-      # Paso 1: Descargar el código del repositorio al runner.
+  # --- JOB 2: DESPLIEGUE (DEPENDE DE LA VALIDACIÓN) ---
+  deploy:
+    # Este job necesita que el job 'validate' haya terminado con éxito.
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: prod # La aprobación manual se pide aquí.
+
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Paso 2: Instalar la Databricks CLI v2 en el runner.
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
-      # Paso 3: Desplegar el Bundle en Databricks.
       - name: Deploy Bundle
         env:
-          # Usamos los secretos de GitHub para la autenticación explícita.
           DATABRICKS_AUTH_TYPE: pat
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
