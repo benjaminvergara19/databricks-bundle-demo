@@ -3,7 +3,7 @@
 # Este es un notebook que será desplegado y ejecutado
 # a través de un Databricks Asset Bundle.
 
-print("¡Hola Mundo desde un Bundle de Databricks! jiji")
+print("¡Hola Mundo desde un Bundle de Databricks! jiji probando validaciones")
 
 # COMMAND ----------
 
