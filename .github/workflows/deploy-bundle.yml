@@ -22,9 +22,8 @@ jobs:
 
       - name: Deploy Bundle
         env:
-          # ---- INICIO DE LA CORRECCIÓN ----
-          # Le decimos explícitamente a la CLI cómo autenticarse
-          DATABRICKS_AUTH_TYPE: token
+          # ---- INICIO DE LA CORRECIÓN ----
+          DATABRICKS_AUTH_TYPE: pat # El nombre correcto es 'pat'
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
           # ---- FIN DE LA CORRECCIÓN ----
