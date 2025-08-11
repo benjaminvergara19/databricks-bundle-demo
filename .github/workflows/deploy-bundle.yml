@@ -1,9 +1,7 @@
 name: Deploy Databricks Bundle
 
 on:
-  # Permite ejecutarlo manualmente
   workflow_dispatch:
-  # Se activa cuando hay cambios en las carpetas clave
   push:
     branches:
       - main
@@ -16,18 +14,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Paso 1: Descargar el código del repositorio
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Paso 2: Instalar la Databricks CLI v2
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
-      # Paso 3: Desplegar el Bundle
       - name: Deploy Bundle
         env:
-          # Usamos los secretos de GitHub para la autenticación
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        # ---- LA CORRECCIÓN ESTÁ AQUÍ ----
         run: databricks bundle deploy --target dev
